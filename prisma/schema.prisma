@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Single-user character — always id=1
+model Character {
+  id                Int      @id @default(1)
+  name              String   @default("Hunter")
+  level             Int      @default(1)
+  xp                Int      @default(0)
+  gold              Int      @default(0)
+  hp                Int      @default(100)
+  hpMax             Int      @default(100)
+  mp                Int      @default(50)
+  mpMax             Int      @default(50)
+  unallocatedPoints Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  stats             Stats?
+  quests            Quest[]
+  habits            Habit[]
+  questLogs         QuestLog[]
+  rewardRedemptions RewardRedemption[]
+}
+
+// 1:1 with Character
+model Stats {
+  id          Int       @id @default(autoincrement())
+  characterId Int       @unique
+  str         Int       @default(5)
+  intel       Int       @default(5)
+  agi         Int       @default(5)
+  wil         Int       @default(5)
+
+  character   Character @relation(fields: [characterId], references: [id])
+}
+
+// One-off tasks
+model Quest {
+  id          Int         @id @default(autoincrement())
+  characterId Int
+  title       String
+  description String?
+  rank        QuestRank   @default(E)
+  xpReward    Int
+  goldReward  Int
+  status      QuestStatus @default(ACTIVE)
+  dueAt       DateTime?
+  createdAt   DateTime    @default(now())
+  completedAt DateTime?
+
+  character   Character   @relation(fields: [characterId], references: [id])
+  logs        QuestLog[]
+}
+
+// Recurring habits
+model Habit {
+  id            Int        @id @default(autoincrement())
+  characterId   Int
+  title         String
+  description   String?
+  recurrence    Recurrence @default(DAILY)
+  xpReward      Int
+  goldReward    Int
+  hpPenalty     Int        @default(10)
+  streak        Int        @default(0)
+  longestStreak Int        @default(0)
+  lastCheckedAt DateTime?
+  isActive      Boolean    @default(true)
+  createdAt     DateTime   @default(now())
+
+  character     Character  @relation(fields: [characterId], references: [id])
+  logs          QuestLog[]
+}
+
+// Append-only audit trail of all game events
+model QuestLog {
+  id          Int       @id @default(autoincrement())
+  characterId Int
+  questId     Int?
+  habitId     Int?
+  event       LogEvent
+  xpDelta     Int       @default(0)
+  goldDelta   Int       @default(0)
+  hpDelta     Int       @default(0)
+  note        String?
+  createdAt   DateTime  @default(now())
+
+  character   Character @relation(fields: [characterId], references: [id])
+  quest       Quest?    @relation(fields: [questId], references: [id])
+  habit       Habit?    @relation(fields: [habitId], references: [id])
+}
+
+// Shop items
+model Reward {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  cost        Int
+  isAvailable Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  redemptions RewardRedemption[]
+}
+
+// Purchase history
+model RewardRedemption {
+  id          Int       @id @default(autoincrement())
+  characterId Int
+  rewardId    Int
+  goldSpent   Int
+  redeemedAt  DateTime  @default(now())
+
+  character   Character @relation(fields: [characterId], references: [id])
+  reward      Reward    @relation(fields: [rewardId], references: [id])
+}
+
+enum QuestRank {
+  E
+  D
+  C
+  B
+  A
+  S
+}
+
+enum QuestStatus {
+  ACTIVE
+  COMPLETED
+  FAILED
+  ARCHIVED
+}
+
+enum Recurrence {
+  DAILY
+  WEEKLY
+}
+
+enum LogEvent {
+  QUEST_COMPLETE
+  QUEST_FAIL
+  HABIT_COMPLETE
+  HABIT_FAIL
+  LEVEL_UP
+  STAT_ALLOCATED
+  REWARD_REDEEMED
+}
