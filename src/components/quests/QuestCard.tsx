@@ -96,33 +96,79 @@ export default function QuestCard({ quest }: QuestCardProps) {
               </div>
             </div>
 
-            {quest.status === "ACTIVE" && (
-              <div className="flex gap-1.5 flex-shrink-0">
-                <button
-                  onClick={handleComplete}
-                  disabled={loading}
-                  className="p-1.5 text-neon-green hover:bg-neon-green/10 transition-colors disabled:opacity-50"
-                  title="Complete"
-                >
-                  <CheckCircle className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={handleFail}
-                  disabled={loading}
-                  className="p-1.5 text-neon-red hover:bg-neon-red/10 transition-colors disabled:opacity-50"
-                  title="Fail"
-                >
-                  <XCircle className="w-5 h-5" />
-                </button>
-              </div>
-            )}
+            <div className="flex gap-1 flex-shrink-0 items-start">
+              {quest.status === "ACTIVE" && (
+                <>
+                  <button
+                    onClick={handleComplete}
+                    disabled={loading}
+                    className="p-1.5 text-neon-green hover:bg-neon-green/10 transition-colors disabled:opacity-50"
+                    title="Complete"
+                  >
+                    <CheckCircle className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={handleFail}
+                    disabled={loading}
+                    className="p-1.5 text-neon-red hover:bg-neon-red/10 transition-colors disabled:opacity-50"
+                    title="Fail"
+                  >
+                    <XCircle className="w-5 h-5" />
+                  </button>
+                </>
+              )}
 
-            {quest.status === "COMPLETED" && (
-              <CheckCircle className="w-5 h-5 text-neon-green flex-shrink-0" />
-            )}
-            {quest.status === "FAILED" && (
-              <XCircle className="w-5 h-5 text-neon-red flex-shrink-0" />
-            )}
+              {quest.status === "COMPLETED" && (
+                <button
+                  onClick={handleReactivate}
+                  disabled={loading}
+                  className="p-1.5 text-muted hover:text-neon-yellow hover:bg-neon-yellow/10 transition-colors disabled:opacity-50"
+                  title="Undo completion (XP/Gold already awarded)"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </button>
+              )}
+
+              {quest.status === "FAILED" && (
+                <button
+                  onClick={handleReactivate}
+                  disabled={loading}
+                  className="p-1.5 text-muted hover:text-neon-yellow hover:bg-neon-yellow/10 transition-colors disabled:opacity-50"
+                  title="Reactivate quest"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </button>
+              )}
+
+              {confirmDelete ? (
+                <>
+                  <button
+                    onClick={handleDelete}
+                    disabled={loading}
+                    className="p-1.5 text-neon-red hover:bg-neon-red/20 transition-colors disabled:opacity-50 text-xs font-bold"
+                    title="Confirm delete"
+                  >
+                    ✓
+                  </button>
+                  <button
+                    onClick={() => setConfirmDelete(false)}
+                    className="p-1.5 text-muted hover:text-foreground transition-colors text-xs"
+                    title="Cancel"
+                  >
+                    ✕
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => setConfirmDelete(true)}
+                  disabled={loading}
+                  className="p-1.5 text-muted hover:text-neon-red hover:bg-neon-red/10 transition-colors disabled:opacity-50"
+                  title="Delete quest"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
