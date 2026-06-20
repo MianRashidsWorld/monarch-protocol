@@ -3,15 +3,26 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { LayoutDashboard, Sword, Flame, ShoppingBag, BarChart3, LogOut, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  PixelCrown,
+  PixelDashboard,
+  PixelSword,
+  PixelFlame,
+  PixelChest,
+  PixelChart,
+  PixelLogout,
+} from "@/components/ui/PixelIcons";
+import { SVGProps, ReactElement } from "react";
 
-const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/quests", label: "Quests", icon: Sword },
-  { href: "/habits", label: "Habits", icon: Flame },
-  { href: "/shop", label: "Reward Shop", icon: ShoppingBag },
-  { href: "/stats", label: "Stats", icon: BarChart3, showBadge: true },
+type IconComponent = (p: SVGProps<SVGSVGElement>) => ReactElement;
+
+const navItems: { href: string; label: string; icon: IconComponent; showBadge?: boolean }[] = [
+  { href: "/dashboard",  label: "Dashboard",   icon: PixelDashboard },
+  { href: "/quests",     label: "Quests",      icon: PixelSword     },
+  { href: "/habits",     label: "Habits",      icon: PixelFlame     },
+  { href: "/shop",       label: "Reward Shop", icon: PixelChest     },
+  { href: "/stats",      label: "Stats",       icon: PixelChart, showBadge: true },
 ];
 
 interface SidebarProps {
@@ -27,13 +38,15 @@ export default function Sidebar({ unallocatedPoints }: SidebarProps) {
       <div className="p-6 border-b border-border">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-background border border-neon-yellow/50 clip-card-sm flex items-center justify-center glow-yellow">
-            <Crown className="w-5 h-5 text-neon-yellow" />
+            <PixelCrown className="w-5 h-5 text-neon-yellow" />
           </div>
           <div>
-            <p className="font-display font-bold text-neon-yellow tracking-widest uppercase text-sm text-glow-yellow">
-              Monarch
+            <p className="font-pixel text-neon-yellow text-[11px] text-glow-yellow leading-tight">
+              MONARCH
             </p>
-            <p className="text-muted text-xs tracking-wider">Protocol</p>
+            <p className="font-pixel text-muted text-[8px] leading-tight mt-1">
+              PROTOCOL
+            </p>
           </div>
         </div>
       </div>
@@ -73,7 +86,7 @@ export default function Sidebar({ unallocatedPoints }: SidebarProps) {
           onClick={() => signOut({ callbackUrl: "/login" })}
           className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-muted hover:text-neon-red transition-colors w-full tracking-wide"
         >
-          <LogOut className="w-4 h-4" />
+          <PixelLogout className="w-4 h-4 flex-shrink-0" />
           <span>Sign Out</span>
         </button>
       </div>

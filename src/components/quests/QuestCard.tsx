@@ -9,6 +9,7 @@ import RankBadge from "./RankBadge";
 import { RANK_CONFIG } from "@/lib/game/ranks";
 import LevelUpOverlay from "./LevelUpOverlay";
 import type { QuestRank } from "@prisma/client";
+import { STAT_CATEGORY_CONFIG, STAT_BONUS } from "@/lib/game/stats";
 
 const RANK_ACCENT_COLOR: Record<QuestRank, string> = {
   E: "bg-rank-e",
@@ -90,6 +91,11 @@ export default function QuestCard({ quest }: QuestCardProps) {
               <div className="flex items-center gap-3 mt-2 text-xs font-display font-semibold">
                 <span className="text-neon-yellow">+{quest.xpReward} XP</span>
                 <span className="text-neon-yellow">+{quest.goldReward}G</span>
+                {quest.statCategory && (
+                  <span className={STAT_CATEGORY_CONFIG[quest.statCategory].color}>
+                    +{STAT_BONUS} {STAT_CATEGORY_CONFIG[quest.statCategory].statLabel}
+                  </span>
+                )}
                 {quest.dueAt && (
                   <span className="text-muted">
                     Due {new Date(quest.dueAt).toLocaleDateString()}

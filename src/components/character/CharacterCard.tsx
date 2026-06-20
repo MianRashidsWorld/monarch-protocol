@@ -1,5 +1,4 @@
 import { Coins, Star } from "lucide-react";
-import Link from "next/link";
 import Image from "next/image";
 
 interface CharacterCardProps {
@@ -7,22 +6,21 @@ interface CharacterCardProps {
   level: number;
   title: string;
   gold: number;
-  unallocatedPoints: number;
 }
 
-export default function CharacterCard({ name, level, title, gold, unallocatedPoints }: CharacterCardProps) {
+export default function CharacterCard({ name, level, title, gold }: CharacterCardProps) {
   return (
     <div className="bg-surface border border-border clip-card p-5 relative overflow-hidden">
       {/* Decorative corner accent */}
       <div className="absolute top-0 right-0 w-16 h-16 bg-neon-yellow/5 border-b border-l border-neon-yellow/20" style={{ clipPath: "polygon(100% 0, 0 0, 100% 100%)" }} />
 
       <div className="flex items-start gap-4">
-        <div className="w-16 h-16 bg-background border border-neon-yellow/40 clip-card flex items-center justify-center flex-shrink-0 glow-yellow">
+        <div className="w-36 h-36 bg-background border border-neon-yellow/40 clip-card flex items-center justify-center flex-shrink-0 glow-yellow">
           <Image
             src="/sprites/avatar.png"
             alt="Character avatar"
-            width={56}
-            height={56}
+            width={128}
+            height={128}
             className="object-contain"
             style={{ imageRendering: "pixelated" }}
           />
@@ -54,16 +52,6 @@ export default function CharacterCard({ name, level, title, gold, unallocatedPoi
         </div>
       </div>
 
-      {/* Stat points alert */}
-      {unallocatedPoints > 0 && (
-        <Link
-          href="/stats"
-          className="mt-4 flex items-center gap-2 bg-neon-yellow/10 border border-neon-yellow/40 px-3 py-2 text-xs font-semibold text-neon-yellow tracking-wider hover:bg-neon-yellow/20 transition-colors animate-pulse-neon"
-        >
-          <span className="w-2 h-2 rounded-full bg-neon-yellow" />
-          {unallocatedPoints} STAT POINT{unallocatedPoints !== 1 ? "S" : ""} AVAILABLE — ALLOCATE NOW
-        </Link>
-      )}
     </div>
   );
 }

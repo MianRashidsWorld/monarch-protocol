@@ -30,7 +30,8 @@ const config: Config = {
         "rank-s": "#FFD700",
       },
       fontFamily: {
-        display: ["Rajdhani", "sans-serif"],
+        display: ["var(--font-pixelify)", "sans-serif"],
+        pixel: ["var(--font-press-start)", "monospace"],
         body: ["Inter", "sans-serif"],
       },
       borderRadius: {

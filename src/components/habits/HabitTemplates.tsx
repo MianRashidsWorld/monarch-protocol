@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Plus, Check, ChevronDown, ChevronUp } from "lucide-react";
 import { HABIT_TEMPLATES } from "@/lib/game/templates";
 import { addHabitFromTemplate } from "@/actions/habit.actions";
+import { STAT_CATEGORY_CONFIG, STAT_BONUS } from "@/lib/game/stats";
 
 interface HabitTemplatesProps {
   existingTitles: string[];
@@ -64,6 +65,11 @@ export default function HabitTemplates({ existingTitles }: HabitTemplatesProps) 
                   <div className="flex items-center gap-3 mt-1.5 text-xs font-display font-semibold">
                     <span className="text-neon-yellow">+{template.xpReward} XP</span>
                     <span className="text-neon-yellow">+{template.goldReward}G</span>
+                    {template.statCategory && (
+                      <span className={STAT_CATEGORY_CONFIG[template.statCategory].color}>
+                        +{STAT_BONUS} {STAT_CATEGORY_CONFIG[template.statCategory].statLabel}
+                      </span>
+                    )}
                     <span className="text-muted capitalize">{template.recurrence.toLowerCase()}</span>
                   </div>
                 </div>

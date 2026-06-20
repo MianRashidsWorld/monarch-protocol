@@ -52,6 +52,7 @@ model Quest {
   xpReward    Int
   goldReward  Int
   status      QuestStatus @default(ACTIVE)
+  statCategory StatCategory?
   dueAt       DateTime?
   createdAt   DateTime    @default(now())
   completedAt DateTime?
@@ -72,6 +73,7 @@ model Habit {
   hpPenalty     Int        @default(10)
   streak        Int        @default(0)
   longestStreak Int        @default(0)
+  statCategory  StatCategory?
   lastCheckedAt DateTime?
   status        HabitStatus @default(ACTIVE)
   createdAt     DateTime   @default(now())
@@ -147,6 +149,13 @@ enum HabitStatus {
   ACTIVE
   COMPLETED
   FAILED
+}
+
+enum StatCategory {
+  STRENGTH
+  INTELLIGENCE
+  AGILITY
+  WILLPOWER
 }
 
 enum LogEvent {

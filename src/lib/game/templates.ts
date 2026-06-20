@@ -1,4 +1,4 @@
-import { QuestRank, Recurrence } from "@prisma/client";
+import { QuestRank, Recurrence, StatCategory } from "@prisma/client";
 
 export interface HabitTemplate {
   id: string;
@@ -9,6 +9,7 @@ export interface HabitTemplate {
   goldReward: number;
   hpPenalty: number;
   emoji: string;
+  statCategory: StatCategory | null;
 }
 
 export interface QuestTemplate {
@@ -17,6 +18,7 @@ export interface QuestTemplate {
   description: string;
   rank: QuestRank;
   emoji: string;
+  statCategory: StatCategory | null;
 }
 
 export const HABIT_TEMPLATES: HabitTemplate[] = [
@@ -29,6 +31,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     xpReward: 60,
     goldReward: 25,
     hpPenalty: 20,
+    statCategory: "STRENGTH",
   },
   {
     id: "cardio",
@@ -39,6 +42,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     xpReward: 40,
     goldReward: 15,
     hpPenalty: 15,
+    statCategory: "AGILITY",
   },
   {
     id: "certification",
@@ -49,6 +53,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     xpReward: 50,
     goldReward: 20,
     hpPenalty: 15,
+    statCategory: "INTELLIGENCE",
   },
   {
     id: "skincare",
@@ -59,6 +64,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     xpReward: 20,
     goldReward: 10,
     hpPenalty: 5,
+    statCategory: null,
   },
   {
     id: "sleep",
@@ -69,6 +75,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     xpReward: 35,
     goldReward: 10,
     hpPenalty: 25,
+    statCategory: "WILLPOWER",
   },
   {
     id: "eating",
@@ -79,6 +86,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     xpReward: 30,
     goldReward: 15,
     hpPenalty: 10,
+    statCategory: "WILLPOWER",
   },
   {
     id: "hydration",
@@ -89,6 +97,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     xpReward: 15,
     goldReward: 5,
     hpPenalty: 5,
+    statCategory: "WILLPOWER",
   },
   {
     id: "meditation",
@@ -99,6 +108,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     xpReward: 25,
     goldReward: 10,
     hpPenalty: 5,
+    statCategory: "WILLPOWER",
   },
   {
     id: "no-phone-morning",
@@ -109,6 +119,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     xpReward: 20,
     goldReward: 10,
     hpPenalty: 10,
+    statCategory: "WILLPOWER",
   },
   {
     id: "steps",
@@ -119,6 +130,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     xpReward: 25,
     goldReward: 10,
     hpPenalty: 5,
+    statCategory: "AGILITY",
   },
   {
     id: "weekly-review",
@@ -129,6 +141,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     xpReward: 80,
     goldReward: 30,
     hpPenalty: 10,
+    statCategory: "INTELLIGENCE",
   },
   {
     id: "cold-shower",
@@ -139,6 +152,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     xpReward: 20,
     goldReward: 10,
     hpPenalty: 10,
+    statCategory: "WILLPOWER",
   },
 ];
 
@@ -149,6 +163,7 @@ export const QUEST_TEMPLATES: QuestTemplate[] = [
     rank: "C",
     title: "Hit a New Personal Record",
     description: "Beat your best lift, run time, or any measurable fitness benchmark.",
+    statCategory: "STRENGTH",
   },
   {
     id: "q-cert-chapter",
@@ -156,6 +171,7 @@ export const QUEST_TEMPLATES: QuestTemplate[] = [
     rank: "D",
     title: "Complete a Certification Module",
     description: "Finish one full module or section of a certification course.",
+    statCategory: "INTELLIGENCE",
   },
   {
     id: "q-cert-full",
@@ -163,6 +179,7 @@ export const QUEST_TEMPLATES: QuestTemplate[] = [
     rank: "A",
     title: "Pass a Certification Exam",
     description: "Study, sit, and pass a professional certification exam.",
+    statCategory: "INTELLIGENCE",
   },
   {
     id: "q-5k",
@@ -170,6 +187,7 @@ export const QUEST_TEMPLATES: QuestTemplate[] = [
     rank: "D",
     title: "Run 5km Without Stopping",
     description: "Complete a 5km run at any pace without walking breaks.",
+    statCategory: "AGILITY",
   },
   {
     id: "q-10k",
@@ -177,6 +195,7 @@ export const QUEST_TEMPLATES: QuestTemplate[] = [
     rank: "C",
     title: "Run 10km",
     description: "Complete a 10km run. Double the distance, double the discipline.",
+    statCategory: "AGILITY",
   },
   {
     id: "q-30day-habit",
@@ -184,6 +203,7 @@ export const QUEST_TEMPLATES: QuestTemplate[] = [
     rank: "B",
     title: "30-Day Streak on Any Habit",
     description: "Maintain a habit without breaking the chain for 30 consecutive days.",
+    statCategory: "WILLPOWER",
   },
   {
     id: "q-meal-prep",
@@ -191,6 +211,7 @@ export const QUEST_TEMPLATES: QuestTemplate[] = [
     rank: "E",
     title: "Meal Prep for the Week",
     description: "Cook and portion meals for the entire week in one session.",
+    statCategory: "WILLPOWER",
   },
   {
     id: "q-book",
@@ -198,6 +219,7 @@ export const QUEST_TEMPLATES: QuestTemplate[] = [
     rank: "C",
     title: "Read an Entire Book",
     description: "Finish a full non-fiction or educational book cover to cover.",
+    statCategory: "INTELLIGENCE",
   },
   {
     id: "q-sleep-week",
@@ -205,6 +227,7 @@ export const QUEST_TEMPLATES: QuestTemplate[] = [
     rank: "D",
     title: "7 Nights of Quality Sleep",
     description: "Get 7–8 hours for 7 consecutive nights. Sleep is the superpower.",
+    statCategory: "WILLPOWER",
   },
   {
     id: "q-skincare-30",
@@ -212,6 +235,7 @@ export const QUEST_TEMPLATES: QuestTemplate[] = [
     rank: "C",
     title: "30-Day Skincare Consistency",
     description: "Complete your skincare routine every single day for 30 days.",
+    statCategory: null,
   },
   {
     id: "q-cut-sugar",
@@ -219,6 +243,7 @@ export const QUEST_TEMPLATES: QuestTemplate[] = [
     rank: "B",
     title: "30 Days No Added Sugar",
     description: "Eliminate added sugar from your diet for an entire month.",
+    statCategory: "WILLPOWER",
   },
   {
     id: "q-martial-arts",
@@ -226,5 +251,6 @@ export const QUEST_TEMPLATES: QuestTemplate[] = [
     rank: "E",
     title: "Attend a Martial Arts Class",
     description: "Show up to boxing, BJJ, MMA, or any combat sports session.",
+    statCategory: "STRENGTH",
   },
 ];

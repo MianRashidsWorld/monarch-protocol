@@ -4,8 +4,9 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { processXpGain, hpMaxForLevel, mpMaxForLevel } from "@/lib/game/xp";
-import { Recurrence } from "@prisma/client";
+import { Recurrence, StatCategory } from "@prisma/client";
 import { HABIT_TEMPLATES } from "@/lib/game/templates";
+import { STAT_BONUS, STAT_FIELD } from "@/lib/game/stats";
 
 const createHabitSchema = z.object({
   title: z.string().min(1).max(200),
@@ -14,6 +15,10 @@ const createHabitSchema = z.object({
   xpReward: z.coerce.number().int().min(1).max(500),
   goldReward: z.coerce.number().int().min(0).max(200),
   hpPenalty: z.coerce.number().int().min(0).max(50),
+  statCategory: z.preprocess(
+    (v) => (v === "" || v == null ? null : v),
+    z.nativeEnum(StatCategory).nullable()
+  ),
 });
 
 export type CreateHabitState = { error?: string; success?: boolean };
@@ -29,6 +34,7 @@ export async function createHabit(
     xpReward: formData.get("xpReward"),
     goldReward: formData.get("goldReward"),
     hpPenalty: formData.get("hpPenalty"),
+    statCategory: formData.get("statCategory"),
   });
 
   if (!parsed.success) {
@@ -44,7 +50,7 @@ export async function createHabit(
   return { success: true };
 }
 
-export async function checkHabit(habitId: number): Promise<{ error?: string; leveledUp?: boolean; newLevel?: number }> {
+export async function checkHabit(habitId: number, windowStartMs: number): Promise<{ error?: string; leveledUp?: boolean; newLevel?: number }> {
   return await prisma.$transaction(async (tx) => {
     const habit = await tx.habit.findFirst({
       where: { id: habitId, characterId: 1, status: "ACTIVE" },
@@ -53,16 +59,13 @@ export async function checkHabit(habitId: number): Promise<{ error?: string; lev
     if (!habit) return { error: "Habit not found." };
 
     if (habit.lastCheckedAt) {
-      const now = new Date();
       const last = new Date(habit.lastCheckedAt);
       if (habit.recurrence === "DAILY") {
-        const sameDay =
-          last.getFullYear() === now.getFullYear() &&
-          last.getMonth() === now.getMonth() &&
-          last.getDate() === now.getDate();
-        if (sameDay) return { error: "Already completed today." };
+        // windowStartMs is the client's local 6 AM (Unix ms), passed so the
+        // server uses the user's timezone instead of UTC midnight.
+        if (last.getTime() >= windowStartMs) return { error: "Already completed today." };
       } else {
-        const diffMs = now.getTime() - last.getTime();
+        const diffMs = Date.now() - last.getTime();
         if (diffMs < 7 * 24 * 60 * 60 * 1000) return { error: "Already completed this week." };
       }
     }
@@ -77,7 +80,7 @@ export async function checkHabit(habitId: number): Promise<{ error?: string; lev
       data: { streak: newStreak, longestStreak: newLongestStreak, lastCheckedAt: new Date() },
     });
 
-    const { newXp, newLevel, leveledUp, levelsGained, statPointsGranted } = processXpGain(
+    const { newXp, newLevel, leveledUp } = processXpGain(
       character.xp,
       character.level,
       habit.xpReward
@@ -96,9 +99,15 @@ export async function checkHabit(habitId: number): Promise<{ error?: string; lev
         mpMax: newMpMax,
         hp: leveledUp ? newHpMax : Math.min(character.hp, newHpMax),
         mp: leveledUp ? newMpMax : Math.min(character.mp, newMpMax),
-        unallocatedPoints: { increment: statPointsGranted },
       },
     });
+
+    if (habit.statCategory) {
+      await tx.stats.update({
+        where: { characterId: 1 },
+        data: { [STAT_FIELD[habit.statCategory]]: { increment: STAT_BONUS } },
+      });
+    }
 
     await tx.questLog.create({
       data: {
@@ -107,7 +116,9 @@ export async function checkHabit(habitId: number): Promise<{ error?: string; lev
         event: "HABIT_COMPLETE",
         xpDelta: habit.xpReward,
         goldDelta: habit.goldReward,
-        note: `Streak: ${newStreak}`,
+        note: habit.statCategory
+          ? `Streak: ${newStreak} | +${STAT_BONUS} ${STAT_FIELD[habit.statCategory].toUpperCase()}`
+          : `Streak: ${newStreak}`,
       },
     });
 
@@ -191,6 +202,7 @@ export async function addHabitFromTemplate(templateId: string): Promise<{ error?
       xpReward: template.xpReward,
       goldReward: template.goldReward,
       hpPenalty: template.hpPenalty,
+      statCategory: template.statCategory,
     },
   });
 

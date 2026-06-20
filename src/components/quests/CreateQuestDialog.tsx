@@ -5,6 +5,8 @@ import { Plus, X } from "lucide-react";
 import { createQuest } from "@/actions/quest.actions";
 import { RANK_ORDER, RANK_CONFIG } from "@/lib/game/ranks";
 import type { CreateQuestState } from "@/actions/quest.actions";
+import { STAT_CATEGORY_CONFIG } from "@/lib/game/stats";
+import { StatCategory } from "@prisma/client";
 
 const initialState: CreateQuestState = {};
 
@@ -101,6 +103,20 @@ export default function CreateQuestDialog() {
                     className="w-full bg-background border border-border text-foreground px-3 py-2.5 text-sm focus:outline-none focus:border-neon-yellow transition-colors"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold tracking-widest text-muted uppercase">
+                  Stat Bonus on Completion
+                </label>
+                <select name="statCategory" defaultValue="" className="w-full bg-background border border-border text-foreground px-3 py-2.5 text-sm focus:outline-none focus:border-neon-yellow transition-colors">
+                  <option value="">None</option>
+                  {(Object.keys(STAT_CATEGORY_CONFIG) as StatCategory[]).map((cat) => (
+                    <option key={cat} value={cat}>
+                      +5 {STAT_CATEGORY_CONFIG[cat].statLabel} — {STAT_CATEGORY_CONFIG[cat].label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {state.error && (

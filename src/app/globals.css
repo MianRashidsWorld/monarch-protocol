@@ -1,8 +1,4 @@
-/* Rajdhani font — weights 400, 600, 700 for display headings */
-@import "@fontsource/rajdhani/latin-400.css";
-@import "@fontsource/rajdhani/latin-600.css";
-@import "@fontsource/rajdhani/latin-700.css";
-
+/* Rajdhani removed — display font is now VT323 via next/font */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -21,7 +17,17 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  /* Scrollbar styling */
+  /* Disable antialiasing so VT323 and Press Start 2P render with crisp pixels */
+  .font-display,
+  .font-pixel {
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+  }
+
+  img {
+    image-rendering: pixelated;
+  }
+
   ::-webkit-scrollbar {
     width: 6px;
   }
@@ -38,7 +44,6 @@
 }
 
 @layer utilities {
-  /* Clipped corner card — the Persona 5 diagonal cut */
   .clip-card {
     clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
   }
@@ -47,7 +52,6 @@
     clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
   }
 
-  /* Neon glow effects */
   .glow-yellow {
     box-shadow: 0 0 8px theme("colors.neon-yellow"), 0 0 20px theme("colors.neon-yellow/30");
   }
@@ -60,7 +64,6 @@
     box-shadow: 0 0 8px theme("colors.neon-red"), 0 0 20px theme("colors.neon-red/30");
   }
 
-  /* Text glow */
   .text-glow-yellow {
     text-shadow: 0 0 10px theme("colors.neon-yellow");
   }

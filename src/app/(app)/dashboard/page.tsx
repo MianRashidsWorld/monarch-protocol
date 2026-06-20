@@ -45,7 +45,6 @@ export default async function DashboardPage() {
           level={character.level}
           title={title}
           gold={character.gold}
-          unallocatedPoints={character.unallocatedPoints}
         />
         <HPMPBars
           hp={character.hp}
