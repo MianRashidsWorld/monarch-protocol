@@ -19,6 +19,7 @@ model Character {
   mp                Int      @default(50)
   mpMax             Int      @default(50)
   unallocatedPoints Int      @default(0)
+  avatarSprite      String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -72,7 +73,7 @@ model Habit {
   streak        Int        @default(0)
   longestStreak Int        @default(0)
   lastCheckedAt DateTime?
-  isActive      Boolean    @default(true)
+  status        HabitStatus @default(ACTIVE)
   createdAt     DateTime   @default(now())
 
   character     Character  @relation(fields: [characterId], references: [id])
@@ -140,6 +141,12 @@ enum QuestStatus {
 enum Recurrence {
   DAILY
   WEEKLY
+}
+
+enum HabitStatus {
+  ACTIVE
+  COMPLETED
+  FAILED
 }
 
 enum LogEvent {

@@ -1,5 +1,6 @@
-import { Crown, Coins, Star } from "lucide-react";
+import { Coins, Star } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface CharacterCardProps {
   name: string;
@@ -16,9 +17,15 @@ export default function CharacterCard({ name, level, title, gold, unallocatedPoi
       <div className="absolute top-0 right-0 w-16 h-16 bg-neon-yellow/5 border-b border-l border-neon-yellow/20" style={{ clipPath: "polygon(100% 0, 0 0, 100% 100%)" }} />
 
       <div className="flex items-start gap-4">
-        {/* Avatar placeholder */}
         <div className="w-16 h-16 bg-background border border-neon-yellow/40 clip-card flex items-center justify-center flex-shrink-0 glow-yellow">
-          <Crown className="w-8 h-8 text-neon-yellow" />
+          <Image
+            src="/sprites/avatar.png"
+            alt="Character avatar"
+            width={56}
+            height={56}
+            className="object-contain"
+            style={{ imageRendering: "pixelated" }}
+          />
         </div>
 
         <div className="flex-1 min-w-0">

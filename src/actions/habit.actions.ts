@@ -47,12 +47,11 @@ export async function createHabit(
 export async function checkHabit(habitId: number): Promise<{ error?: string; leveledUp?: boolean; newLevel?: number }> {
   return await prisma.$transaction(async (tx) => {
     const habit = await tx.habit.findFirst({
-      where: { id: habitId, characterId: 1, isActive: true },
+      where: { id: habitId, characterId: 1, status: "ACTIVE" },
     });
 
     if (!habit) return { error: "Habit not found." };
 
-    // Check if already checked today (for DAILY) or this week (for WEEKLY)
     if (habit.lastCheckedAt) {
       const now = new Date();
       const last = new Date(habit.lastCheckedAt);
@@ -63,7 +62,6 @@ export async function checkHabit(habitId: number): Promise<{ error?: string; lev
           last.getDate() === now.getDate();
         if (sameDay) return { error: "Already completed today." };
       } else {
-        // WEEKLY: within 7 days
         const diffMs = now.getTime() - last.getTime();
         if (diffMs < 7 * 24 * 60 * 60 * 1000) return { error: "Already completed this week." };
       }
@@ -126,11 +124,56 @@ export async function checkHabit(habitId: number): Promise<{ error?: string; lev
   });
 }
 
-export async function deleteHabit(habitId: number): Promise<{ error?: string }> {
+export async function uncheckHabit(habitId: number): Promise<{ error?: string }> {
+  const habit = await prisma.habit.findFirst({
+    where: { id: habitId, characterId: 1, status: "ACTIVE" },
+  });
+  if (!habit) return { error: "Habit not found." };
+
+  await prisma.habit.update({
+    where: { id: habitId },
+    data: {
+      lastCheckedAt: null,
+      streak: Math.max(0, habit.streak - 1),
+    },
+  });
+
+  revalidatePath("/habits");
+  return {};
+}
+
+export async function retireHabit(habitId: number): Promise<{ error?: string }> {
   await prisma.habit.update({
     where: { id: habitId, characterId: 1 },
-    data: { isActive: false },
+    data: { status: "COMPLETED" },
   });
+  revalidatePath("/habits");
+  return {};
+}
+
+export async function failHabit(habitId: number): Promise<{ error?: string }> {
+  await prisma.habit.update({
+    where: { id: habitId, characterId: 1 },
+    data: { status: "FAILED" },
+  });
+  revalidatePath("/habits");
+  return {};
+}
+
+export async function reactivateHabit(habitId: number): Promise<{ error?: string }> {
+  await prisma.habit.update({
+    where: { id: habitId, characterId: 1 },
+    data: { status: "ACTIVE" },
+  });
+  revalidatePath("/habits");
+  return {};
+}
+
+export async function deleteHabit(habitId: number): Promise<{ error?: string }> {
+  await prisma.$transaction([
+    prisma.questLog.updateMany({ where: { habitId }, data: { habitId: null } }),
+    prisma.habit.delete({ where: { id: habitId } }),
+  ]);
   revalidatePath("/habits");
   return {};
 }

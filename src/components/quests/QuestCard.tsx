@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { CheckCircle, XCircle, Clock, Trash2, RotateCcw } from "lucide-react";
 import type { Quest } from "@prisma/client";
 import { completeQuest, failQuest, deleteQuest, reactivateQuest } from "@/actions/quest.actions";
@@ -23,6 +24,7 @@ interface QuestCardProps {
 }
 
 export default function QuestCard({ quest }: QuestCardProps) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [levelUp, setLevelUp] = useState<{ newLevel: number; levelsGained: number } | null>(null);
@@ -46,7 +48,7 @@ export default function QuestCard({ quest }: QuestCardProps) {
   async function handleDelete() {
     setLoading(true);
     await deleteQuest(quest.id);
-    setLoading(false);
+    router.refresh();
   }
 
   async function handleReactivate() {

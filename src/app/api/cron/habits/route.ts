@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   const overdueHabits = await prisma.habit.findMany({
     where: {
       characterId: 1,
-      isActive: true,
+      status: "ACTIVE",
       OR: [
         // Never checked
         { lastCheckedAt: null },
